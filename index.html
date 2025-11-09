@@ -13,8 +13,13 @@
         <div class="logo"><a href="index.html">Nathan Ramon-Lau</a></div>
         <nav class="main-nav">
             <ul>
-                <li><a href="quadruped.html">Projects</a></li>
-                <li><a href="#">About</a></li>
+                <li><a href="#">Projects</a>
+                    <ul>
+                        <li><a href="quadruped.html">Quadruped Dog</a></li>
+                        <li><a href="burst.html">BURST ROV</a></li>
+                    </ul>
+                </li>
+                <li><a href="about.html">About</a></li>
             </ul>
         </nav>
     </header>
@@ -33,7 +38,7 @@
                     document.getElementById("header-intro").innerHTML += text.charAt(index);
                     setTimeout(function () {
                         typeWriter(text, index + 1);
-                    }, 50); // Delay of 100ms
+                    }, 50);
                 }
             }
             let text = "Hey, I'm Nathan 👋";
@@ -47,51 +52,52 @@
                 </video>
             </div>
         </div>
-        
+        <!--
         <div class="intro-technical-skills">
             <p class="description technical">
                 Here are some of my technical skills
             </p>
             <div class="technical-skills-container">
                 <div class="technical-skill-box">
-                    <!-- might have to be a image container so the logos are preserved. not sure -->
+                    
                     <img src="static/logos/solidworks-logo.png"/>
                 </div>
 
                 <div class="technical-skill-box">
-                    <!-- might have to be a image container so the logos are preserved. not sure -->
+                    
                     <img src="static/logos/python-logo.svg"/>
                 </div>
 
                 <div class="technical-skill-box">
-                    <!-- might have to be a image container so the logos are preserved. not sure -->
+                    
                     <img src="static/logos/fusion360-logo.svg"/>
                 </div>
 
                 <div class="technical-skill-box matlab">
-                    <!-- might have to be a image container so the logos are preserved. not sure -->
+                    
                     <img src="static/logos/MATLAB-logo.svg"/>
                 </div>
 
                 <div class="technical-skill-box onshape">
-                    <!-- might have to be a image container so the logos are preserved. not sure -->
+                    
                     <img src="static/logos/onshape-logo.png"/>
                 </div>
 
                 <div class="technical-skill-box c">
-                    <!-- might have to be a image container so the logos are preserved. not sure -->
+                    
                     <img src="static/logos/c++-logo.svg"/>
                 </div>
 
                 <div class="technical-skill-box html">
-                    <!-- might have to be a image container so the logos are preserved. not sure -->
+                    
                     <img src="static/logos/html-logo.svg"/>
                 </div>
             </div>
         </div>
+        -->
 
         <div class="intro-projects-overview">
-
+            <!-- 
             <div class="project-container">
                 <div class="project-image-container">
                     <img src="static/images/project-filler-1.png" alt="project image"/>
@@ -104,14 +110,14 @@
                     </p>
                 </div>
             </div>
-
+            -->
             <div class="project-container">
                 <div class="project-image-container">
                     <img src="static/images/burst-image-1.png" alt="project image"/>
                 </div>
 
                 <div class="project-overview">
-                    <h1 class="header project">Bio-Inspired Underwater Robotic Submersible Team</h1>
+                    <h1 class="header project">Bio Underwater Robotic Submersible Team</h1>
                     <p class="description project-text">
                         Project Management, CAD, Buoyancy Calculations
                     </p>
@@ -130,7 +136,7 @@
                     </p>
                 </div>
             </div>
-
+            <!-- 
             <div class="project-container">
                 <div class="project-image-container">
                     <img src="static/images/project-filler-4.png" alt="project image"/>
@@ -143,7 +149,7 @@
                     </p>
                 </div>
             </div>
-
+            -->
         </div>
 
         <div class="intro-overview">

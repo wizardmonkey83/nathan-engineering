@@ -1,0 +1,41 @@
+.about-page-section {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 2rem;
+    display: flex;
+    flex-direction: column;
+}
+
+.about-page-container {
+    max-width: 1200px;
+    margin: 2rem auto;
+    display: flex;
+    flex-direction: row;
+}
+
+.about-text {
+    display: flex;
+    margin-right: 5rem;
+    flex-direction: column;
+    max-width: 50%;
+}
+
+.description.about {
+    font-size: 1.25rem;
+    line-height: 2rem;
+}
+
+.about-photo-container {
+    display: flex;
+    align-items: center;
+    justify-content: right;
+    margin-left: 5rem;
+
+}
+
+.about-photo-container img {
+    border-radius: 500px;
+    width: 400px;
+    height: 400px;
+    box-shadow: 5px 5px 5px #bebebe;
+}

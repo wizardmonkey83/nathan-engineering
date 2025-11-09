@@ -45,6 +45,31 @@ a {
     gap: 2rem;
 }
 
+.main-nav ul ul {
+    display: none;
+    position: absolute;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    cursor: pointer;
+    transition: all 2s ease-in-out;
+}
+
+.main-nav ul li:hover ul {
+    display: block;
+    border-radius: 15px;
+}
+
+.main-nav ul li::before ul {
+    display:block;
+    content:'';
+    height:20px;
+}
+
+.main-nav ul li ul li {
+    display: block;
+    padding: 1rem;
+}
+
 .main-nav a {
     font-size: .75rem;
     text-decoration: none;
@@ -74,6 +99,7 @@ a {
     background-image: url(images/san-vicente-background.png);
     flex-grow: 1;
     padding: 5rem;
+    margin-bottom: 15rem;
     background-position: center;
     background-size: cover;
 }
@@ -148,31 +174,40 @@ a {
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 40px;
+    margin-bottom: 6rem;
 }
 
 .project-container {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     flex-direction: column;
     border-radius: 20px;
-    box-shadow: 10px 10px #1b1913;
+    box-shadow: 5px 5px 5px #bebebe;
     cursor: pointer;
     transition: all 0.2s ease-in-out;
-    max-height: fit-content;
-
+    height: 100%;
 }
 
 .project-container:hover {
     transform: translateY(-10px);
 }
 
-.project-image-container img {
-    border-radius: 20px 20px 0px 0px;
-    max-width: 100%;
-    height: auto;
-    background-position: center;
-    background-size: cover;
+.project-image-container {
+    aspect-ratio: 4 / 3; 
 
+    /* Add this to make the rounded corners crop the image */
+    overflow: hidden; 
+    
+    /* Keep this as a background for images that are slow to load */
+    background-color: #e2dfdf; 
+
+    border-radius: 20px 20px 0px 0px;
+}
+
+.project-image-container img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
 }
 
 .project-overview {
@@ -190,4 +225,10 @@ a {
 
 .description.contact {
     padding-left: 2rem;
+}
+
+@media (max-width: 768px) {
+    .intro-projects-overview {
+        grid-template-columns: 1fr;
+    }
 }
