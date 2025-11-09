@@ -30,7 +30,7 @@ a {
 }
 
 .logo {
-    font-size: 1.5rem;
+    font-size: 1rem;
     font-weight: 400;
 }
 
@@ -43,7 +43,7 @@ a {
 }
 
 .main-nav a {
-    font-size: 1rem;
+    font-size: .75rem;
     text-decoration: none;
     transition: color 0.2s ease-in-out;
 }
@@ -53,31 +53,134 @@ a {
     margin: 2rem auto;
     padding: 0 2rem;
     display: flex;
+    flex-direction: column;
+
 }
 
 .intro-overview {
     display: flex;
-    align-items: flex-end;
-    height: 350px;
-}
-
-.intro-overview img {
-    width: 150px;
-    height: 150px;
-    border-radius: 50px;
-}
-
-.intro-section-description {
-    display: flex;
+    align-items: center;
     flex-direction: column;
-    justify-content: left;
+    justify-content: right;
+    margin-bottom: 5rem;
+}
+
+.intro-video-section {
+    display: flex;
+    border-radius: 20px;
+    background-image: url(images/san-vicente-background.png);
+    flex-grow: 1;
+    padding: 5rem;
+    background-position: center;
+    background-size: cover;
+}
+
+.intro-video-container video {
+    width: 100%;
+    height: auto;
+    border-radius: 15px;
+}
+
+.intro-technical-skills {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    justify-content: right;
+    margin: 5rem;
+}
+
+.technical-skills-container {
+    display: flex;
+    align-items: center;
+    flex-direction: row;
+    margin-bottom: 1rem;
+    margin-top: 2rem;
+    max-width: 1200px;
+}
+
+.technical-skill-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 15px;
+    background-color: #1b1913;
+    margin-left: 1.5rem;
+    width: 150px;
+    height: 120px;
+}
+
+
+.technical-skill-box img {
+    width: 100px;
+    height: 100px;
+}
+
+.technical-skill-box.autocad img {
+    width: 100px;
+    height: 60px;
+}
+
+.technical-skill-box.matlab img {
+    width: 75px;
+    height: 75px;
+}
+
+.technical-skill-box.onshape img {
+    width: 100px;
+    height: 30px;
+}
+
+.technical-skill-box.html img {
+    width: 60px;
+    height: 60px;
+}
+
+.technical-skill-box.c img {
+    width: 90px;
+    height: 90px;
+}
+
+.intro-projects-overview {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.project-container {
+    display: flex;
+    justify-content: center;
+    flex-direction: column;
+    border-radius: 20px;
+    box-shadow: 10px 10px #1b1913;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.project-container:hover {
+    transform: translateY(-10px);
+}
+
+.project-image-container img {
+    border-radius: 20px 20px 0px 0px;
+    width: 100%;
+    background-position: center;
+    background-size: cover;
+
+}
+
+.project-overview {
+    padding-left: 1.5rem;
+}
+
+.header.contact {
+    margin-top: 5rem;
+}
+
+.contact-links {
+    display: flex;
+    flex-direction: row;
+}
+
+.description.contact {
     padding-left: 2rem;
-}
-
-.header.intro {
-    padding-bottom: 0rem;
-}
-
-.description.intro {
-    padding-top: 0rem;
 }
