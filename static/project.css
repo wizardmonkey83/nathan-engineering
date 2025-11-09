@@ -39,20 +39,19 @@
     line-height: 2rem;
 }
 
-.project-image-container {
+.project-image-container-project-page {
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
     margin-top: 6rem;
-
 }
 
-.project-image-container img {
+.project-image-container-project-page img {
     border-radius: 15px;
     width: 300px;
     height: 300px;
-    box-shadow: 10px 10px #1b1913;
+    box-shadow: 5px 5px 5px #bebebe;
 }
 
 .image-caption.project {
@@ -73,4 +72,3 @@
     font-weight: 400;
     font-size: 1.1rem;
 }
-
