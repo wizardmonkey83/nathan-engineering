@@ -35,7 +35,9 @@
 
 .about-photo-container img {
     border-radius: 500px;
-    width: 400px;
-    height: 400px;
+    max-width: 400px;
+    max-height: 600px;
     box-shadow: 5px 5px 5px #bebebe;
+    object-fit: cover;
+
 }

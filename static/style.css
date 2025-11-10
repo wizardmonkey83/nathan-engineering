@@ -1,9 +1,5 @@
 body {
-    background-attachment: fixed;
-    background-image: url(images/forest-background.png);
-    background-size: cover;
-    background-repeat: no-repeat;
-    border: 20px #ffd500;
+    background-color: #EFEFEF;
     color: #1d1d1d;
     font-family: "Stack Sans Notch", sans-serif;
     font-style: normal;
@@ -26,27 +22,6 @@ a {
     font-weight: 100;
 }
 
-.page-border {
-    pointer-events: none;
-    position: fixed;
-    inset: 0;
-    border: 10px solid #ffd500;
-    z-index: 9999;
-}
-
-.footer {
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    position: sticky;
-    bottom: 0;
-    width: 100%;
-    height: 50px; 
-    background: #ffffff; 
-    color: #1d1d1d; 
-}
-
 .main-header {
     display: flex;
     justify-content: space-between;
@@ -55,7 +30,6 @@ a {
     max-width: 1200px;
     margin-left: auto;
     margin-right: auto;
-    background-color: #ffffff;
 }
 
 .logo {
@@ -72,29 +46,36 @@ a {
 
 }
 
+.main-nav ul li {
+    position: relative;
+}
+
 .main-nav ul ul {
     display: none;
     position: absolute;
     background-color: #ffffff;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
     cursor: pointer;
-    transition: all 2s ease-in-out;
+    transition: all 0.2s ease-in-out;
+    left: 50%;
+    transform: translateX(-50%);
+    min-width: 130px;
 }
 
 .main-nav ul li:hover ul {
     display: block;
     border-radius: 15px;
+
 }
 
-.main-nav ul li::before ul {
-    display:block;
-    content:'';
-    height:20px;
+.main-nav ul li ul li:hover {
+    background-color: #f5f5f5; 
 }
 
 .main-nav ul li ul li {
     display: block;
     padding: 1rem;
+    transition: background-color 0.2s ease-in-out;
 }
 
 .main-nav a {
@@ -119,14 +100,12 @@ a {
     flex-direction: column;
     justify-content: right;
     margin-bottom: 5rem;
-    background-color: #ffffff;
     padding: 2rem;
     border-radius: 15px;
 }
 
 .intro-overview.hero {
     display: flex;
-    background-color: #ffffff;
     padding: 2rem;
     border-radius: 15px;
     align-items: center;
@@ -149,6 +128,7 @@ a {
     border-radius: 500px;
     width: 300px;
     height: 300px;
+    box-shadow: 5px 5px 5px #bebebe;
 }
 
 
@@ -208,14 +188,14 @@ a {
     border-radius: 15px;
     background-color: #EFEFEF;
     margin-left: 1.5rem;
-    width: 150px;
-    height: 120px;
+    max-width: 100px;
+    max-height: 90px;
 }
 
 
 .technical-skill-box img {
-    width: 100px;
-    height: 100px;
+    width: 80px;
+    height: 80px;
 }
 
 .technical-skill-box.autocad img {
@@ -239,8 +219,8 @@ a {
 }
 
 .technical-skill-box.c img {
-    width: 80px;
-    height: 80px;
+    width: 50px;
+    height: 50px;
 }
 
 .intro-projects-overview {
@@ -259,7 +239,6 @@ a {
     cursor: pointer;
     transition: all 0.2s ease-in-out;
     height: 100%;
-    background-color: #ffd500;
 }
 
 .project-container:hover {
@@ -268,13 +247,8 @@ a {
 
 .project-image-container {
     aspect-ratio: 4 / 3; 
-
-    /* Add this to make the rounded corners crop the image */
     overflow: hidden; 
-    
-    /* Keep this as a background for images that are slow to load */
     background-color: #e2dfdf; 
-
     border-radius: 20px 20px 0px 0px;
 }
 

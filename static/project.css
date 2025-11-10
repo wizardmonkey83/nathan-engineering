@@ -28,6 +28,7 @@
 
 .header.project {
     font-size: 2rem;
+    margin-bottom: .25rem;
 }
 
 .project-header {
@@ -75,7 +76,7 @@
 
 .header-with-skills {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     
 }
 
@@ -84,4 +85,9 @@
     width: 120px;
     height: 100px;
     align-items: flex-end;
+}
+
+.subheader-italics {
+    font-size: 1rem;
+    font-style: italic;
 }
