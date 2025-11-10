@@ -72,3 +72,16 @@
     font-weight: 400;
     font-size: 1.1rem;
 }
+
+.header-with-skills {
+    display: flex;
+    flex-direction: row;
+    
+}
+
+.technical-skill-box.project {
+    margin-left: 1rem;
+    width: 120px;
+    height: 100px;
+    align-items: flex-end;
+}
