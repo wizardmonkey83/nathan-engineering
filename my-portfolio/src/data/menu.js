@@ -20,6 +20,7 @@ export const menu = [
       {
         id: "nimbus",
         filename: "nimbus.txt",
+        image: "./public/favicon.svg",
         label: "N.I.M.B.U.S.",
         title: "N.I.M.B.U.S.",
         tagline: "A prediction market bot looking for an edge in daily temperature markets.",
