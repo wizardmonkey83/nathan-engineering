@@ -5,7 +5,7 @@ const canvas = ref(null)
 let ctx = null
 let resizeTimer = null
 
-/* ---------- deterministic randomness (fixed seed = same scene every load) ---------- */
+/* ---------- deterministic randomness ---------- */
 function mulberry32 (seed) {
   return function () {
     seed |= 0; seed = (seed + 0x6D2B79F5) | 0
@@ -15,9 +15,9 @@ function mulberry32 (seed) {
   }
 }
 
-const hillBack = [[0,0.62],[0.22,0.52],[0.5,0.6],[0.78,0.5],[1,0.58]]
-const hillMid = [[0,0.72],[0.3,0.6],[0.55,0.68],[0.8,0.58],[1,0.7]]
-const hillFront = [[0,0.86],[0.25,0.76],[0.5,0.82],[0.75,0.74],[1,0.84]]
+const hillBack = [[0, 0.65], [0.2, 0.62], [0.5, 0.66], [0.8, 0.63], [1, 0.65]]
+const hillMid = [[0, 0.75], [0.3, 0.77], [0.6, 0.74], [0.85, 0.76], [1, 0.73]]
+const hillFront = [[0, 0.88], [0.25, 0.85], [0.5, 0.89], [0.75, 0.86], [1, 0.88]]
 
 function ridgeYAt (pts, t) {
   for (let i = 1; i < pts.length; i++) {
@@ -31,15 +31,36 @@ function ridgeYAt (pts, t) {
   return pts[pts.length - 1][1]
 }
 
-function makeRidge (seed, n, baseY, amp) {
-  const rand = mulberry32(seed)
-  const pts = []
-  for (let i = 0; i < n; i++) {
-    const x = i / (n - 1)
-    const edge = i === 0 || i === n - 1
-    const y = edge ? baseY : baseY - rand() * amp
-    pts.push([x, y])
+/* ---------- Fractal Mountain Generator ---------- */
+function midpointDisplacement(pts, roughness, rand) {
+  let newPts = []
+  for(let i=0; i < pts.length - 1; i++) {
+    newPts.push(pts[i])
+    let midX = (pts[i][0] + pts[i+1][0]) / 2
+    let midY = (pts[i][1] + pts[i+1][1]) / 2
+    midY += (rand() - 0.5) * roughness 
+    newPts.push([midX, midY])
   }
+  newPts.push(pts[pts.length - 1])
+  return newPts
+}
+
+function makeFramingMountain(seed, yEdge, yMid, peakAmp) {
+  const rand = mulberry32(seed)
+  let pts = [
+    [0, yEdge + rand() * 0.1],
+    [0.15, yEdge + (yMid - yEdge) * 0.2 - rand() * peakAmp],
+    [0.5, yMid],
+    [0.85, yEdge + (yMid - yEdge) * 0.2 - rand() * peakAmp],
+    [1, yEdge + rand() * 0.1]
+  ]
+  
+  pts = midpointDisplacement(pts, 0.08, rand)
+  pts = midpointDisplacement(pts, 0.05, rand)
+  pts = midpointDisplacement(pts, 0.03, rand)
+  pts = midpointDisplacement(pts, 0.015, rand)
+  pts = midpointDisplacement(pts, 0.005, rand)
+  
   return pts
 }
 
@@ -50,52 +71,111 @@ function makeForest (seed, count, sizeRange) {
     trees.push({
       t: rand(),
       size: sizeRange[0] + rand() * (sizeRange[1] - sizeRange[0]),
-      type: rand() > 0.7 ? 'round' : 'pine',
-      jitter: (rand() - 0.5) * 0.01
+      jitter: (rand() - 0.5) * 0.02
     })
   }
   return trees.sort((a, b) => a.t - b.t)
 }
 
-const mountainBack = makeRidge(7, 9, 0.48, 0.13)
-const mountainFront = makeRidge(13, 11, 0.55, 0.17)
+function makeBlooms(seed, clusterCount, flowersPerCluster, surfaceRidge, treesToAvoid) {
+  const rand = mulberry32(seed)
+  const colors = ['#d13b70', '#e6739f', '#8a4988', '#f2c14e', '#bd3c53', '#fdfdfd']
+  const generated = []
+  
+  for(let c=0; c < clusterCount; c++) {
+    let cx = rand() 
+    let cMinY = ridgeYAt(surfaceRidge, cx) + 0.05
+    if (cMinY > 0.94) cMinY = 0.94
+    let cy = cMinY + rand() * (1.0 - cMinY)
 
-const forestBack = makeForest(21, 7, [0.05, 0.08])
-const forestMid = makeForest(34, 11, [0.075, 0.115])
-const forestFront = makeForest(55, 15, [0.11, 0.16])
+    for(let i=0; i < flowersPerCluster; i++) {
+      let ux = rand() + rand() + rand() - 1.5
+      let uy = rand() + rand() + rand() - 1.5
+      
+      // Wider horizontal spread for more natural meadow bands
+      let x = cx + ux * 0.12
+      if (x < 0 || x > 1) continue
+      
+      // Only avoid the very center trunk of the trees so flowers can sit under the canopy
+      let isOverlappingTree = treesToAvoid.some(tree => {
+        let trunkWidth = 0.025 
+        return Math.abs(x - tree.t) < trunkWidth
+      })
+      
+      if (isOverlappingTree) continue
 
-const blooms = [
-  [0.04,0.90,'#e8a5b0',9],[0.09,0.955,'#f3c66a',6],[0.16,0.90,'#e98b6b',7],
-  [0.22,0.965,'#f7f4ec',5],[0.30,0.955,'#f3c66a',6],[0.37,0.90,'#e8a5b0',7],
-  [0.45,0.965,'#f3e2b8',6],[0.53,0.90,'#e98b6b',7],[0.61,0.955,'#f3c66a',6],
-  [0.68,0.965,'#e8a5b0',6],[0.76,0.90,'#f7f4ec',5],[0.84,0.955,'#f3c66a',6],
-  [0.91,0.965,'#e98b6b',6],[0.97,0.90,'#e8a5b0',7],[0.02,0.975,'#f3c66a',5]
-]
+      let minY = ridgeYAt(surfaceRidge, x) + 0.01
+      // Tighter vertical spread to keep them grouped nicely on the hills
+      let y = cy + uy * 0.05
+      if (y < minY) y = minY + rand() * 0.03
+      if (y > 0.98) y = 0.98
 
-function drawRidgeFill (w, h, pts, color) {
+      let size = 1.0 + rand() * 2.2
+      let color = colors[Math.floor(rand() * colors.length)]
+      let rot = rand() * Math.PI * 2
+      generated.push([x, y, color, size, rot])
+    }
+  }
+  return generated
+}
+
+const mountainBack = makeFramingMountain(7, 0.2, 0.7, 0.35)
+const mountainFront = makeFramingMountain(13, 0.3, 0.85, 0.45)
+
+const forestBack = makeForest(21, 35, [0.06, 0.09])
+const forestMid = makeForest(34, 45, [0.08, 0.13])
+const forestFront = makeForest(55, 55, [0.12, 0.18])
+
+// 45 clusters of 20 flowers to create dense, wide patches across the bottom
+const blooms = makeBlooms(42, 45, 20, hillMid, forestMid)
+
+function drawTexturedMountain (w, h, pts, lightColor, shadowColor) {
   ctx.beginPath()
   ctx.moveTo(pts[0][0] * w, h)
   pts.forEach(([x, y]) => ctx.lineTo(x * w, y * h))
   ctx.lineTo(pts[pts.length - 1][0] * w, h)
   ctx.closePath()
-  ctx.fillStyle = color
+  ctx.fillStyle = lightColor
+  ctx.fill()
+
+  ctx.fillStyle = shadowColor
+  ctx.beginPath()
+  for (let i = 0; i < pts.length - 1; i++) {
+    let p1 = pts[i]
+    let p2 = pts[i+1]
+    if (p2[1] > p1[1]) { 
+      ctx.moveTo(p1[0] * w, p1[1] * h)
+      ctx.lineTo(p2[0] * w, p2[1] * h)
+      ctx.lineTo(p2[0] * w - w * 0.005, p2[1] * h + h * 0.06)
+      ctx.lineTo(p1[0] * w - w * 0.005, p1[1] * h + h * 0.06)
+    }
+  }
   ctx.fill()
 }
 
-function drawSnowCaps (w, h, pts, threshold) {
-  ctx.fillStyle = 'rgba(255,255,255,.88)'
-  for (let i = 1; i < pts.length - 1; i++) {
-    const [x, y] = pts[i]
+function drawSnowCaps (w, h, pts, threshold, seed) {
+  const rand = mulberry32(seed)
+  ctx.fillStyle = 'rgba(253, 245, 240, 0.95)'
+  
+  ctx.beginPath()
+  ctx.moveTo(pts[0][0] * w, pts[0][1] * h)
+  
+  for (let i = 1; i < pts.length; i++) {
+    ctx.lineTo(pts[i][0] * w, pts[i][1] * h)
+  }
+
+  for (let i = pts.length - 1; i >= 0; i--) {
+    let [x, y] = pts[i]
     if (y < threshold) {
-      const capW = 0.018 * w
-      ctx.beginPath()
-      ctx.moveTo(x * w, y * h)
-      ctx.lineTo(x * w - capW, y * h + capW * 0.9)
-      ctx.lineTo(x * w + capW, y * h + capW * 0.9)
-      ctx.closePath()
-      ctx.fill()
+      let depth = threshold - y
+      let drop = depth * (0.4 + rand() * 0.6)
+      ctx.lineTo(x * w, (y + drop) * h)
+    } else {
+      ctx.lineTo(x * w, y * h)
     }
   }
+  ctx.closePath()
+  ctx.fill()
 }
 
 function drawHillFill (w, h, pts, color) {
@@ -129,47 +209,14 @@ function drawPine (x, yBase, hgt, color) {
   ctx.closePath(); ctx.fill()
 }
 
-function drawRoundTree (x, yBase, hgt, color) {
-  const r = hgt * 0.32
-  ctx.fillStyle = color
-  ctx.fillRect(x - hgt * 0.03, yBase - hgt * 0.12, hgt * 0.06, hgt * 0.12)
-  ctx.beginPath(); ctx.arc(x, yBase - hgt * 0.55, r, 0, Math.PI * 2); ctx.fill()
-  ctx.beginPath(); ctx.arc(x - r * 0.55, yBase - hgt * 0.4, r * 0.72, 0, Math.PI * 2); ctx.fill()
-  ctx.beginPath(); ctx.arc(x + r * 0.55, yBase - hgt * 0.4, r * 0.72, 0, Math.PI * 2); ctx.fill()
-}
-
 function drawForest (w, h, ridgePts, trees, colors) {
   trees.forEach((tree, i) => {
     const x = tree.t * w
     const yBase = (ridgeYAt(ridgePts, tree.t) + tree.jitter) * h
     const hgt = tree.size * h
     const color = colors[i % colors.length]
-    if (tree.type === 'pine') drawPine(x, yBase, hgt, color)
-    else drawRoundTree(x, yBase, hgt, color)
+    drawPine(x, yBase, hgt, color)
   })
-}
-
-function drawStringLights (w, h) {
-  const y0 = h * 0.06, dip = h * 0.045
-  ctx.strokeStyle = 'rgba(50,40,30,.35)'
-  ctx.lineWidth = 1
-  ctx.beginPath()
-  ctx.moveTo(0, y0)
-  ctx.quadraticCurveTo(w * 0.5, y0 + dip, w, y0)
-  ctx.stroke()
-  const n = 16
-  for (let i = 0; i <= n; i++) {
-    const t = i / n
-    const y = (1 - t) * (1 - t) * y0 + 2 * (1 - t) * t * (y0 + dip) + t * t * y0
-    ctx.save()
-    ctx.shadowColor = 'rgba(255,214,140,.95)'
-    ctx.shadowBlur = 9
-    ctx.fillStyle = '#ffdf9a'
-    ctx.beginPath()
-    ctx.arc(t * w, y + 5, 2.1, 0, Math.PI * 2)
-    ctx.fill()
-    ctx.restore()
-  }
 }
 
 function draw () {
@@ -183,49 +230,62 @@ function draw () {
   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)
 
   const sky = ctx.createLinearGradient(0, 0, 0, h)
-  sky.addColorStop(0, '#f6d9b8')
-  sky.addColorStop(0.5, '#eadfc2')
-  sky.addColorStop(1, '#dfe6c8')
+  sky.addColorStop(0, '#bea9de')
+  sky.addColorStop(0.3, '#f1a8b3')
+  sky.addColorStop(0.6, '#fce4b4')
+  sky.addColorStop(1, '#d8e2c3')
   ctx.fillStyle = sky
   ctx.fillRect(0, 0, w, h)
 
-  const gx = w * 0.78, gy = h * 0.16, gr = Math.max(w, h) * 0.28
+  const gx = w * 0.15, gy = h * 0.25, gr = Math.max(w, h) * 0.4
   const glow = ctx.createRadialGradient(gx, gy, 0, gx, gy, gr)
-  glow.addColorStop(0, 'rgba(255,241,214,.9)')
-  glow.addColorStop(1, 'rgba(255,241,214,0)')
+  glow.addColorStop(0, 'rgba(255, 230, 180, 0.7)')
+  glow.addColorStop(1, 'rgba(255, 230, 180, 0)')
   ctx.fillStyle = glow
   ctx.beginPath(); ctx.arc(gx, gy, gr, 0, Math.PI * 2); ctx.fill()
 
-  drawRidgeFill(w, h, mountainBack, '#cdd7c6')
-  drawRidgeFill(w, h, mountainFront, '#a9bda3')
-  drawSnowCaps(w, h, mountainFront, 0.42)
+  drawTexturedMountain(w, h, mountainBack, '#6e6773', '#5a545e')
+  drawSnowCaps(w, h, mountainBack, 0.52, 42) // Reduced from 0.65 to 0.52
 
-  drawStringLights(w, h)
+  drawTexturedMountain(w, h, mountainFront, '#4a474f', '#36343a')
+  drawSnowCaps(w, h, mountainFront, 0.62, 84) // Reduced from 0.75 to 0.62
 
-  drawHillFill(w, h, hillBack, '#b9c9a0')
-  drawForest(w, h, hillBack, forestBack, ['#9fb787', '#8fae7c'])
+  drawHillFill(w, h, hillBack, '#5c6b45')
+  drawForest(w, h, hillBack, forestBack, ['#2a4225', '#1e331a'])
 
-  drawHillFill(w, h, hillMid, '#93ad78')
-  drawForest(w, h, hillMid, forestMid, ['#6f9457', '#5f8a52', '#789a5e'])
+  drawHillFill(w, h, hillMid, '#44542d')
+  drawForest(w, h, hillMid, forestMid, ['#182e16', '#253d21', '#3b4d24'])
 
-  drawHillFill(w, h, hillFront, '#6f9457')
-  drawForest(w, h, hillFront, forestFront, ['#31502f', '#3f6b3f', '#4c7a4f'])
+  drawHillFill(w, h, hillFront, '#31401f')
+  drawForest(w, h, hillFront, forestFront, ['#11210f', '#0c170a', '#182915'])
 
   blooms.forEach((b) => {
     ctx.save()
-    ctx.shadowColor = b[2]
-    ctx.shadowBlur = b[3] * 0.9
+    ctx.translate(b[0] * w, b[1] * h)
+    ctx.rotate(b[4])
+    ctx.globalAlpha = 0.95
+    
+    const size = b[3]
+    
     ctx.fillStyle = b[2]
-    ctx.globalAlpha = 0.9
+    for(let i=0; i<5; i++) {
+      ctx.beginPath()
+      ctx.ellipse(0, size * 0.7, size * 0.45, size * 0.9, 0, 0, Math.PI * 2)
+      ctx.fill()
+      ctx.rotate((Math.PI * 2) / 5)
+    }
+    
+    ctx.fillStyle = '#fce4b4'
     ctx.beginPath()
-    ctx.arc(b[0] * w, b[1] * h, b[3], 0, Math.PI * 2)
+    ctx.arc(0, 0, size * 0.4, 0, Math.PI * 2)
     ctx.fill()
+    
     ctx.restore()
   })
 
-  const vignette = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.35, w / 2, h / 2, Math.max(w, h) * 0.75)
+  const vignette = ctx.createRadialGradient(w / 2, h / 2, Math.min(w, h) * 0.35, w / 2, h / 2, Math.max(w, h) * 0.8)
   vignette.addColorStop(0, 'rgba(0,0,0,0)')
-  vignette.addColorStop(1, 'rgba(20,18,12,.16)')
+  vignette.addColorStop(1, 'rgba(15,10,20,.25)')
   ctx.fillStyle = vignette
   ctx.fillRect(0, 0, w, h)
 }
